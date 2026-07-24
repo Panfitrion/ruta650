@@ -1,0 +1,11 @@
+# Dependencias y salida de build del proyecto fuente.
+app/node_modules/
+app/dist/
+
+# El mapa offline pesa 29 MB y ya está versionado en la raíz, que es lo que
+# GitHub Pages publica. Versionarlo dos veces duplicaría el peso del repo.
+# Si clonas en limpio, copia el de la raíz a app/public/ antes de compilar:
+#   cp cdmx.pmtiles app/public/
+app/public/cdmx.pmtiles
+
+.DS_Store
