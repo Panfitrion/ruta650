@@ -1,5 +1,5 @@
 /*
- * Service worker de "Mi Moto 650".
+ * Service worker de "Ruta 650".
  *
  * Hace que la app corra 100% OFFLINE en el iPhone (sin la Mac):
  *  - Precachea el "esqueleto" (app, fuentes y sprites del mapa).
@@ -9,31 +9,38 @@
  *    cachear respuestas 206, así que guardamos el archivo COMPLETO una vez y
  *    aquí cortamos el fragmento pedido y devolvemos un 206 sintético.
  *
+ * Todas las rutas se arman a partir de BASE (la carpeta donde vive este sw),
+ * así la app funciona igual en la raíz del dominio que en /ruta650/.
+ *
  * Sube CACHE_VERSION para forzar limpieza tras un cambio.
  */
-const CACHE_VERSION = 'v5'
-const CACHE = `mimoto-${CACHE_VERSION}`
-const PMTILES = '/cdmx.pmtiles'
+const CACHE_VERSION = 'v6'
+const CACHE = `ruta650-${CACHE_VERSION}`
+
+// Carpeta de la app, con barra final. p. ej. "/" o "/ruta650/".
+const BASE = new URL('./', self.location.href).pathname
+const PMTILES = `${BASE}cdmx.pmtiles`
 
 // Esqueleto que se guarda al instalar (archivos chicos y estables).
 const SHELL = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png',
-  '/sprites/light.json',
-  '/sprites/light.png',
-  '/sprites/light@2x.json',
-  '/sprites/light@2x.png',
-  '/fonts/Noto%20Sans%20Regular/0-255.pbf',
-  '/fonts/Noto%20Sans%20Regular/256-511.pbf',
-  '/fonts/Noto%20Sans%20Medium/0-255.pbf',
-  '/fonts/Noto%20Sans%20Medium/256-511.pbf',
-  '/fonts/Noto%20Sans%20Italic/0-255.pbf',
-  '/fonts/Noto%20Sans%20Italic/256-511.pbf',
-]
+  '',
+  'index.html',
+  'manifest.webmanifest',
+  'icon-192.png',
+  'icon-512.png',
+  'apple-touch-icon.png',
+  'assets/ios.css',
+  'sprites/light.json',
+  'sprites/light.png',
+  'sprites/light@2x.json',
+  'sprites/light@2x.png',
+  'fonts/Noto%20Sans%20Regular/0-255.pbf',
+  'fonts/Noto%20Sans%20Regular/256-511.pbf',
+  'fonts/Noto%20Sans%20Medium/0-255.pbf',
+  'fonts/Noto%20Sans%20Medium/256-511.pbf',
+  'fonts/Noto%20Sans%20Italic/0-255.pbf',
+  'fonts/Noto%20Sans%20Italic/256-511.pbf',
+].map((p) => BASE + p)
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -107,7 +114,9 @@ self.addEventListener('fetch', (event) => {
   // Navegación: red primero, si no hay red cae al index cacheado.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html').then((r) => r || caches.match('/')))
+      fetch(request).catch(() =>
+        caches.match(`${BASE}index.html`).then((r) => r || caches.match(BASE))
+      )
     )
     return
   }

@@ -1,0 +1,77 @@
+/*
+ * Capa de ajustes para iPhone — Ruta 650.
+ *
+ * Se carga DESPUÉS del CSS compilado del bundle, así que gana por orden de
+ * cascada sin tener que tocar los 86 KB minificados. Todo lo de aquí corrige
+ * comportamiento táctil y áreas seguras; no cambia colores ni tipografía.
+ */
+
+/* iOS reescala el texto al girar el teléfono; esto lo impide. */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/*
+ * touch-action: manipulation mata el retardo de 300 ms y el zoom por doble tap.
+ * overscroll-behavior corta el rebote elástico y el pull-to-refresh, que en una
+ * app de pantalla completa se siente como un error.
+ */
+html,
+body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Pero los campos sí deben poder seleccionarse y editarse. */
+input,
+textarea,
+select,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/*
+ * dvh en vez de vh: en Safari (app no instalada) la barra de direcciones se
+ * come parte de 100vh y recorta la pantalla.
+ */
+#app {
+  min-height: 100dvh;
+}
+
+/*
+ * Pantalla principal del velocímetro. Sin esto el contenido queda por debajo de
+ * la Dynamic Island arriba y de la barra de gestos abajo, porque el viewport es
+ * viewport-fit=cover con barra de estado translúcida.
+ * El padding original es .5rem .7rem; max() conserva ese mínimo.
+ */
+.dash[data-v-99017644] {
+  width: 100%;
+  height: 100dvh;
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  padding-left: max(0.7rem, env(safe-area-inset-left));
+  padding-right: max(0.7rem, env(safe-area-inset-right));
+}
+
+/* Controles del mapa: 29 px es el tamaño de escritorio de MapLibre y queda muy
+   por debajo del mínimo táctil de 44 pt de Apple. */
+.maplibregl-ctrl button,
+.maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+}
+
+/* En pantalla táctil no existe hover: sin esto el estilo se queda "pegado"
+   después de tocar. */
+@media (hover: none) {
+  .h-del[data-v-acd205ee]:hover {
+    color: inherit;
+  }
+}
